@@ -50,7 +50,7 @@ int main()
             // 取出第1列字段的值
             int log_data = sqlite3_column_int(stmt1, 0);
             //输出相关查询的数据
-            std::clog << "id = " << id << ", age = " << log_data;
+            std::clog << "id = " << id << ", age = " << log_data << "\n";
         }
     }
     else
