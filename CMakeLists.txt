@@ -25,9 +25,10 @@ project(sqlite3_demo)
 # )
 
 add_executable(demo src/demo.cpp)
-
 target_link_libraries(demo sqlite3)
 
+add_executable(db_tool src/db_tool.cpp)
+target_link_libraries(db_tool sqlite3)
 
 ## Install headers
 
