@@ -4,7 +4,7 @@
 int main()
 {
     sqlite3 *sql = nullptr;              // 一个打开的数据库实例
-    const char *path = "./demo.sqlite3"; //某个sql文件的路径
+    const char *path = "../demo.sqlite3"; //某个sql文件的路径
     int result = sqlite3_open_v2(path, &sql, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE | SQLITE_OPEN_NOMUTEX | SQLITE_OPEN_SHAREDCACHE, NULL);
     if (result == SQLITE_OK)
     {
@@ -29,7 +29,7 @@ int main()
     }
     else
     {
-        std::clog << "添加数据语句有问题\n";
+        std::clog << "添加数据语句有问题:" << result1 << "\n";
     }
     //清理语句句柄，准备执行下一个语句
     sqlite3_finalize(stmt);
@@ -55,7 +55,7 @@ int main()
     }
     else
     {
-        std::clog << "查询语句有问题\n";
+        std::clog << "查询语句有问题:" << result2 << "\n";
     }
     //清理语句句柄，准备执行下一个语句
     sqlite3_finalize(stmt1);
