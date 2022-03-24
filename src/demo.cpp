@@ -16,7 +16,7 @@ int main()
         std::clog << "打开数据库连接失败\n";
     }
 
-    const char *sqlSentence = "INSERT INTO t_log(log_data) VALUES('test1'); "; // SQL语句
+    const char *sqlSentence = "INSERT INTO t_log(log_text) VALUES('test1'); "; // SQL语句
     sqlite3_stmt *stmt = NULL;                                                 // stmt语句句柄
     //进行插入前的准备工作——检查语句合法性
     //-1代表系统会自动计算SQL语句的长度
