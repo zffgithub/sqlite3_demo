@@ -80,7 +80,7 @@ void DbTool::init_db(void)
 
 void DbTool::insert(std::string log_text)
 {
-    char sqlSentence[100];
+    char sqlSentence[1000];
     const char *log_t = log_text.data();
     const char *log_type = "debug";
     char trackback[200];
