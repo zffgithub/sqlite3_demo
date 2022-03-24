@@ -26,7 +26,7 @@ project(sqlite3_demo)
 
 add_executable(demo src/demo.cpp)
 
-# target_link_libraries(bms_recv)
+target_link_libraries(demo sqlite3)
 
 
 ## Install headers
