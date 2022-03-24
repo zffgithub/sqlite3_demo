@@ -10,15 +10,16 @@ public:
     ~DbTool();
 
 private:
-    sqlite3 *sql;
+    sqlite3 *db;
+    void init_db(void);
 };
 
 DbTool::DbTool(void)
 {
-    this->sql = nullptr;
-    // sqlite3 *sql = nullptr;              // 一个打开的数据库实例
+    this->db = nullptr;
+    // sqlite3 *db = nullptr;              // 一个打开的数据库实例
     const char *path = "../demo.sqlite3"; //某个sql文件的路径
-    int result = sqlite3_open_v2(path, &this->sql, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE | SQLITE_OPEN_NOMUTEX | SQLITE_OPEN_SHAREDCACHE, NULL);
+    int result = sqlite3_open_v2(path, &this->db, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE | SQLITE_OPEN_NOMUTEX | SQLITE_OPEN_SHAREDCACHE, NULL);
     if (result == SQLITE_OK)
     {
         std::clog << "打开数据库连接成功\n";
@@ -27,26 +28,70 @@ DbTool::DbTool(void)
     else
     {
         std::clog << "打开数据库连接失败\n";
+        exit(1);
     }
+    this->init_db();
 }
 
 DbTool::~DbTool(void)
 {
-    sqlite3_close_v2(this->sql);
-    this->sql = nullptr;
+    sqlite3_close_v2(this->db);
+    this->db = nullptr;
+}
+
+static int callback(void *NotUsed, int argc, char **argv, char **azColName)
+{
+    int i;
+    for (i = 0; i < argc; i++)
+    {
+        printf("%s = %s\n", azColName[i], argv[i] ? argv[i] : "NULL");
+    }
+    printf("\n");
+    return 0;
+}
+
+void DbTool::init_db(void)
+{
+    const char *log_sql = "CREATE TABLE IF NOT EXISTS t_log("
+                          "id INTEGER PRIMARY KEY AUTOINCREMENT,"
+                          "log_type varchar(10) NOT NULL,"
+                          "trackback TEXT  NOT NULL,"
+                          "log_text TEXT  NOT NULL,"
+                          "create_timestamp TIMESTAMP default (datetime('now', 'localtime')),"
+                          "create_time VARCHAR(20) default (datetime('now', 'localtime')));";
+    const char *execute_sqls[1] = {log_sql};
+
+    char *zErrMsg = 0;
+    int rc;
+    for (const char *execute_sql : execute_sqls)
+    {
+        rc = sqlite3_exec(this->db, execute_sql, callback, 0, &zErrMsg);
+        if (rc != SQLITE_OK)
+        {
+            fprintf(stderr, "SQL error: %s\n", zErrMsg);
+            sqlite3_free(zErrMsg);
+        }
+        else
+        {
+            fprintf(stdout, "Table created successfully\n");
+        }
+    }
 }
 
 void DbTool::insert(std::string log_text)
 {
     char sqlSentence[100];
     const char *log_t = log_text.data();
-    sprintf(sqlSentence, "INSERT INTO t_log(log_text) VALUES('%s');", log_t);
+    const char *log_type = "debug";
+    char trackback[200];
+    sprintf(trackback, "file:%s, function:%s, line:%d", __FILE__, __FUNCTION__, __LINE__);
+    sprintf(sqlSentence, "INSERT INTO t_log(log_text,log_type,trackback) VALUES('%s', '%s', '%s');", log_t, log_type, trackback);
     std::clog << "执行sql:" << sqlSentence << "\n";
     // const char *sqlSentence = "INSERT INTO t_log(log_text) VALUES('test1'); "; // SQL语句
     sqlite3_stmt *stmt = NULL; // stmt语句句柄
     //进行插入前的准备工作——检查语句合法性
     //-1代表系统会自动计算SQL语句的长度
-    int result1 = sqlite3_prepare_v2(this->sql, sqlSentence, -1, &stmt, NULL);
+    int result1 = sqlite3_prepare_v2(this->db, sqlSentence, -1, &stmt, NULL);
     if (result1 == SQLITE_OK)
     {
         std::clog << "添加数据语句OK\n";
@@ -67,7 +112,8 @@ void DbTool::select(void)
     sqlite3_stmt *stmt1 = NULL;                        // stmt语句句柄
     //进行查询前的准备工作——检查语句合法性
     //-1代表系统会自动计算SQL语句的长度
-    int result2 = sqlite3_prepare_v2(this->sql, sqlSentence1, -1, &stmt1, NULL);
+    int result2 = sqlite3_prepare_v2(this->db, sqlSentence1, -1, &stmt1, NULL);
+
     if (result2 == SQLITE_OK)
     {
         std::clog << "查询语句OK\n";
@@ -75,9 +121,9 @@ void DbTool::select(void)
         while (sqlite3_step(stmt1) == SQLITE_ROW)
         {
             // 取出第0列字段的值
-            const unsigned char *id = sqlite3_column_text(stmt1, 1);
+            const unsigned char *log_data = sqlite3_column_text(stmt1, 1);
             // 取出第1列字段的值
-            int log_data = sqlite3_column_int(stmt1, 0);
+            int id = sqlite3_column_int(stmt1, 0);
             //输出相关查询的数据
             std::clog << "id = " << id << ", log_text = " << log_data << "\n";
         }
