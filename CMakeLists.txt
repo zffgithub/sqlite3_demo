@@ -19,16 +19,34 @@ project(sqlite3_demo)
 # find_package(sqlite3 REQUIRED)
 # find_package(rclcpp REQUIRED)
 
-# include_directories(
-# ./include
+include_directories(
+./include
 # ${catkin_INCLUDE_DIRS}
-# )
+)
 
 add_executable(demo src/demo.cpp)
 target_link_libraries(demo sqlite3)
 
-add_executable(db_tool src/db_tool.cpp)
-target_link_libraries(db_tool sqlite3)
+# add_executable(db_tool src/db_tool.cpp)
+# target_link_libraries(db_tool sqlite3)
+
+# add_library(db_lib
+#   src/db_tool.cpp
+# )
+# target_include_directories(db_lib
+#     PUBLIC 
+#         ${PROJECT_SOURCE_DIR}/include
+# )
+
+set(SOURCES
+  src/db_tool.cpp
+  src/singleton_db.cpp
+)
+
+add_executable(singleton_db ${SOURCES})
+target_link_libraries(singleton_db 
+  sqlite3
+)
 
 ## Install headers
 

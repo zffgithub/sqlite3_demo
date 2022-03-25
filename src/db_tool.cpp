@@ -1,18 +1,7 @@
 #include <iostream>
 #include <sqlite3.h>
+#include "db.hpp"
 
-class DbTool
-{
-public:
-    void insert(std::string log_text);
-    void select(void);
-    DbTool();
-    ~DbTool();
-
-private:
-    sqlite3 *db;
-    void init_db(void);
-};
 
 DbTool::DbTool(void)
 {
@@ -73,7 +62,7 @@ void DbTool::init_db(void)
         }
         else
         {
-            fprintf(stdout, "Table created successfully\n");
+            fprintf(stdout, "SQL successfully: %s\n", execute_sql);
         }
     }
 }
