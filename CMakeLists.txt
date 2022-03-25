@@ -30,22 +30,22 @@ target_link_libraries(demo sqlite3)
 # add_executable(db_tool src/db_tool.cpp)
 # target_link_libraries(db_tool sqlite3)
 
-# add_library(db_lib
-#   src/db_tool.cpp
-# )
-# target_include_directories(db_lib
-#     PUBLIC 
-#         ${PROJECT_SOURCE_DIR}/include
-# )
+add_library(db_lib
+  src/db_tool.cpp
+)
+target_link_libraries(db_lib
+    sqlite3
+)
 
 set(SOURCES
-  src/db_tool.cpp
+  # src/db_tool.cpp
   src/singleton_db.cpp
 )
 
 add_executable(singleton_db ${SOURCES})
 target_link_libraries(singleton_db 
   sqlite3
+  db_lib
 )
 
 ## Install headers
