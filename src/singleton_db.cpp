@@ -19,7 +19,7 @@ DbTool *DbSingleton::GetInstance(/* args */)
     }
     return instance;
 }
-
+DbTool *DbSingleton::instance = NULL;
 int main()
 {
     static DbTool *inst = DbSingleton::GetInstance();

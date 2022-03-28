@@ -2,7 +2,6 @@
 #include <sqlite3.h>
 #include "db.hpp"
 
-
 DbTool::DbTool(void)
 {
     this->db = nullptr;
@@ -126,7 +125,7 @@ void DbTool::select(void)
 }
 
 // 程序的主函数
-int main()
+int _main()
 {
     DbTool db;
 
