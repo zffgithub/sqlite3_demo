@@ -12,11 +12,13 @@ public:
 
 DbTool *DbSingleton::GetInstance(/* args */)
 {
+    std::mutex mt;
+    mt.lock();
     if (instance == NULL)
     {
         instance = new DbTool();
-        return instance;
     }
+    mt.unlock();
     return instance;
 }
 DbTool *DbSingleton::instance = NULL;
